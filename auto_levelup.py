@@ -80,7 +80,6 @@ for i in range(1, counter + 1):
             'attacking_pokemon': my_pokemon_id,
             'defending_pokemon': defending_pokemon_id
         })
-    print(battle_response.json())
     # Смотрим результат
     # В случае поражения переходим на следующую итерацию
     if battle_response.json()['result'] == 'Твой покемон проиграл':
