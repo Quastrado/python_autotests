@@ -20,10 +20,10 @@ from utils import cleaning
 
 # Узнаём у пользователя сколько битв он хочет провести
 while True:
-    print('В день можно провести не более 20 битв. Введите "0" (ноль) для выхода')
+    print('В день можно провести не более 25 битв. Введите "0" (ноль) для выхода')
     counter = input('Желаемое количество битв: ')
     if counter.isdigit():
-        if int(counter) >= 1 and int(counter) <= 20:
+        if int(counter) >= 1 and int(counter) <= 25:
             counter = int(counter)
             break
         elif counter == '0':
@@ -80,11 +80,16 @@ for i in range(1, counter + 1):
             'attacking_pokemon': my_pokemon_id,
             'defending_pokemon': defending_pokemon_id
         })
+    print(battle_response.json())
     # Смотрим результат
     # В случае поражения переходим на следующую итерацию
     if battle_response.json()['result'] == 'Твой покемон проиграл':
         print(f'Итерация {i}, итог: Поражение')
         continue
+    elif battle_response.json()['result'] == 'Твой лимит боёв исчерпан. Текущее ограничение: 25 в день':
+        print('Твой лимит боёв исчерпан. Текущее ограничение: 25 в день')
+        cleaning(base_url, trainer_id, trainer_token)
+        sys.exit()
     # В случае победы удаляем покемона и начинаем следующую итерацию
     print(f'Итерация {i}, итог: Победа')
 
