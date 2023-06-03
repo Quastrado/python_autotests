@@ -82,13 +82,15 @@ for i in range(1, counter + 1):
         })
     # Смотрим результат
     # В случае поражения переходим на следующую итерацию
-    if battle_response.json()['result'] == 'Твой покемон проиграл':
-        print(f'Итерация {i}, итог: Поражение')
-        continue
-    elif battle_response.json()['result'] == 'Твой лимит боёв исчерпан. Текущее ограничение: 25 в день':
+    limit_text = 'Твой лимит боёв исчерпан. Текущее ограничение: 25 в день'
+    if limit_text in battle_response.text:
         print('Твой лимит боёв исчерпан. Текущее ограничение: 25 в день')
         cleaning(base_url, trainer_id, trainer_token)
         sys.exit()
+    elif battle_response.json()['result'] == 'Твой покемон проиграл':
+        print(f'Итерация {i}, итог: Поражение')
+        continue
+    
     # В случае победы удаляем покемона и начинаем следующую итерацию
     print(f'Итерация {i}, итог: Победа')
 
