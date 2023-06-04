@@ -14,3 +14,4 @@ pokemon_photo = random.choice([
     'https://dolnikov.ru/pokemons/albums/093.png',
     'https://dolnikov.ru/pokemons/albums/094.png'
 ])
+limit_text = 'Твой лимит боёв исчерпан. Текущее ограничение: 25 в день'
