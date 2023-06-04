@@ -15,7 +15,7 @@
 import requests
 import sys
 import time
-from vars.vars import base_url, trainer_id, trainer_token, pokemon_name, pokemon_photo
+from vars.vars import base_url, trainer_id, trainer_token, pokemon_name, pokemon_photo, limit_text
 from utils import cleaning
 
 # Узнаём у пользователя сколько битв он хочет провести
@@ -82,14 +82,14 @@ for i in range(1, counter + 1):
         })
     # Смотрим результат
     # В случае поражения переходим на следующую итерацию
-    limit_text = 'Твой лимит боёв исчерпан. Текущее ограничение: 25 в день'
-    if limit_text in battle_response.text:
+    try:
+        if battle_response.json()['result'] == 'Твой покемон проиграл':
+            print(f'Итерация {i}, итог: Поражение')
+            continue
+    except KeyError:
         print(limit_text)
         cleaning(base_url, trainer_id, trainer_token)
         sys.exit()
-    elif battle_response.json()['result'] == 'Твой покемон проиграл':
-        print(f'Итерация {i}, итог: Поражение')
-        continue
     
     # В случае победы удаляем покемона и начинаем следующую итерацию
     print(f'Итерация {i}, итог: Победа')
