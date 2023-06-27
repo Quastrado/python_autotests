@@ -2,10 +2,16 @@ import requests
 
 
 def get_my_pokemons(base_url, trainer_id):
+    '''
+    Получить покемонов тренера
+    '''
     return requests.get(f'{base_url}pokemons', params={'trainer_id': trainer_id}).json()
     
 
 def create_pokemon(base_url, trainer_token):
+    '''
+    Создать покемона
+    '''
     create_pokemon = requests.post(f'{base_url}pokemons',
                         headers={
                             'Content-Type': 'application/json',
@@ -19,6 +25,9 @@ def create_pokemon(base_url, trainer_token):
 
 
 def add_pokeball(base_url, trainer_token, my_pokemon_id):
+    '''
+    Поймать покемона в покебол
+    '''
     requests.post(f'{base_url}trainers/add_pokeball',
             headers={
                 'Content-Type': 'application/json',
@@ -31,12 +40,18 @@ def add_pokeball(base_url, trainer_token, my_pokemon_id):
     
 
 def find_pokemons_in_pokeball(base_url):
+    '''
+    Найти покемонов в покеболе
+    '''
     return requests.get(f'{base_url}pokemons', params={
         'in_pokeball': 1
         }).json()
 
 
 def fight_a_battle(base_url, trainer_token, my_pokemon_id, defending_pokemon_id):
+    '''
+    Провести битву
+    '''
     return requests.post(f'{base_url}battle',
         headers={
             'Content-Type': 'application/json',
