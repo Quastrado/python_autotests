@@ -1,13 +1,20 @@
 import random
 
-base_url = 'https://pokemonbattle.me:9104/'
+base_url = 'https://api.pokemonbattle.me:9104'
 trainer_token = 'd77b841d8b0e7a3a065b5504a2305958'
 trainer_id = 4454
 trainer_name = 'Quastrado'
 pokemon_name = random.choice([
-    'Uno',
-    'Dois',
-    'Tres'
+    'Severus',
+    'Lucius',
+    'Rudolfus',
+    'Regulus',
+    'Rabastan',
+    'Bellatrix',
+    'Antonin',
+    'August',
+    'Narcissa',
+    'Selvin'
 ])
 pokemon_photo = random.choice([
     'https://dolnikov.ru/pokemons/albums/092.png',
