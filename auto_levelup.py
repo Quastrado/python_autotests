@@ -16,84 +16,59 @@ import requests
 import sys
 import time
 from vars.vars import base_url, trainer_id, trainer_token, pokemon_name, pokemon_photo, limit_text
-from utils import cleaning
+from methods import *
+from utils import *
 
 # Узнаём у пользователя сколько битв он хочет провести
 while True:
     print('В день можно провести не более 25 битв. Введите "0" (ноль) для выхода')
     counter = input('Желаемое количество битв: ')
-    if counter.isdigit():
-        if int(counter) >= 1 and int(counter) <= 25:
-            counter = int(counter)
-            break
-        elif counter == '0':
-            print('Правильно. Я тоже за мир')
-            sys.exit()
-# Выселяем покемонов из покебола и убиваем чтоб ничего не падало
-cleaning(base_url, trainer_id, trainer_token)
+    if counter.isdigit() and int(counter) in range(1, 26):
+        counter = int(counter)
+        break
+    elif counter == '0':
+        print('Правильно. Я тоже за мир')
+        sys.exit()
 
 
 for i in range(1, counter + 1):
     # Задержка в 2 секунды чтоб не мучать сильно апишку
     time.sleep(2)
-    # Создаём покемона и получаем его id
-    my_pokemon_id = requests.post(f'{base_url}pokemons',
-                    headers={
-                        'Content-Type': 'application/json',
-                        'trainer_token': trainer_token
-                        },
-                    json={
-                        'name': pokemon_name,
-                        'photo': pokemon_photo
-                    }).json()['id']
-    # Добавляем покемона в покебол
-    requests.post(f'{base_url}trainers/add_pokeball',
-            headers={
-                'Content-Type': 'application/json',
-                'trainer_token': trainer_token
-            },
-            json={
-                'pokemon_id': my_pokemon_id
-            })
-    # Получаем покемонов, находящихся в покеболе
-    # Первого из них выбираем себе в противники
-    pokemons_in_pokeball = requests.get(f'{base_url}pokemons', params={
-        'in_pokeball': 1
-        }).json()
-    
-    another_trainer_id = pokemons_in_pokeball[0]['trainer_id']
-    defending_pokemon_id = pokemons_in_pokeball[0]['id']
-    # Сравниваем id тренера выбранного покемона
-    # Если совпадает с id нашего тренера, выбираем следующего
-    j = 0
-    while another_trainer_id == str(trainer_id):
-        j = j + 1
-        another_trainer_id = pokemons_in_pokeball[j]['trainer_id']
-        defending_pokemon_id = pokemons_in_pokeball[j]['id']
+    # Получаем список своих покемонов
+    my_pokemons = get_my_pokemons(base_url, trainer_id)
+    # Если покемонов у тренера меньше 5, создаём нового и ловим
+    if len(my_pokemons) < 5:
+        new_pokemon = create_pokemon(base_url, trainer_token)
+        new_pokemon_id = new_pokemon['id']
+        add_pokeball(base_url, trainer_token, new_pokemon_id)
+    # Выбираем из своих покемонов покемона с самой высокой атакой
+    my_pokemon_id = get_strongest(my_pokemons)['id']
+    # Получаем список покемонов в покеболе (первая выдача)
+    in_pokeball = find_pokemons_in_pokeball(base_url)
+    # Фильтруем список покемонов в покеболе
+    # Там не должно быть нашего покемона
+    opponents = get_opponents(in_pokeball, trainer_id)
+    # Из списка противников выбираем с самой низкой атакой
+    opponent = get_weakest(opponents)
+    opponent_id = opponent['id']
     # Проводим битву
-    battle_response = requests.post(f'{base_url}battle',
-        headers={
-            'Content-Type': 'application/json',
-            'trainer_token': trainer_token
-        },
-        json={
-            'attacking_pokemon': my_pokemon_id,
-            'defending_pokemon': defending_pokemon_id
-        })
+    battle = fight_a_battle(
+        base_url,
+        trainer_token,
+        my_pokemon_id,
+        opponent_id
+        )
     # Смотрим результат
-    # В случае поражения переходим на следующую итерацию
     try:
-        if battle_response.json()['result'] == 'Твой покемон проиграл':
+        if battle['result'] == 'Твой покемон проиграл':
             print(f'Итерация {i}, итог: Поражение')
             continue
     except KeyError:
+    # Если в теле ответа нет ключа 'result', 
+    # выводим сообщение о превышении лимита боёв
+    # в день и выходим из программы
         print(limit_text)
-        cleaning(base_url, trainer_id, trainer_token)
         sys.exit()
     
-    # В случае победы удаляем покемона и начинаем следующую итерацию
-    print(f'Итерация {i}, итог: Победа')
-
-    cleaning(base_url, trainer_id, trainer_token)
-    
+    print(f'Итерация {i}, итог: Победа')   
     

@@ -1,4 +1,5 @@
 import requests
+from vars.vars import pokemon_photo, pokemon_name
 
 
 def get_my_pokemons(base_url, trainer_id):
@@ -18,8 +19,8 @@ def create_pokemon(base_url, trainer_token):
                             'trainer_token': trainer_token
                             },
                         json={
-                            'name': 'some name',
-                            'photo': 'https://dolnikov.ru/pokemons/albums/001.png'
+                            'name': pokemon_name,
+                            'photo': pokemon_photo
                         })
     return create_pokemon.json()
 
