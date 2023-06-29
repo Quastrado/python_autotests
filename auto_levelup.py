@@ -41,8 +41,11 @@ for i in range(1, counter + 1):
         new_pokemon = create_pokemon(base_url, trainer_token)
         new_pokemon_id = new_pokemon['id']
         add_pokeball(base_url, trainer_token, new_pokemon_id)
+    # Находим своих покемонов в покеболе
+    my_pokemons_in_pokeball = get_my_pokemons_in_pokeball(base_url, trainer_id) 
     # Выбираем из своих покемонов покемона с самой высокой атакой
-    my_pokemon_id = get_strongest(my_pokemons)['id']
+    my_pokemon = get_strongest(my_pokemons_in_pokeball)
+    my_pokemon_id = my_pokemon['id']
     # Получаем список покемонов в покеболе (первая выдача)
     in_pokeball = find_pokemons_in_pokeball(base_url)
     # Фильтруем список покемонов в покеболе
@@ -70,5 +73,13 @@ for i in range(1, counter + 1):
         print(limit_text)
         sys.exit()
     
-    print(f'Итерация {i}, итог: Победа')   
+    print(f'Итерация {i}, итог: Победа')
+    # Если атака покемона увеличивается до 7,
+    # убираем его из покебола чтоб обезопасить
+    if int(float(my_pokemon['attack'])) == 7:
+        delete_from_pokeball(
+            base_url,
+            trainer_token,
+            my_pokemon_id
+            )
     
