@@ -7,7 +7,19 @@ def get_my_pokemons(base_url, trainer_id):
     Получить покемонов тренера
     '''
     return requests.get(f'{base_url}pokemons', params={'trainer_id': trainer_id}).json()
-    
+
+
+def get_my_pokemons_in_pokeball(base_url, trainer_id):
+    '''
+    Получить покемонов тренера в покеболе
+    '''
+    return requests.get(f'{base_url}pokemons', 
+                        params={
+                            'trainer_id': trainer_id,
+                            'in_pokeball': 1
+                            }
+                            ).json()
+
 
 def create_pokemon(base_url, trainer_token):
     '''
@@ -30,6 +42,21 @@ def add_pokeball(base_url, trainer_token, my_pokemon_id):
     Поймать покемона в покебол
     '''
     requests.post(f'{base_url}trainers/add_pokeball',
+            headers={
+                'Content-Type': 'application/json',
+                'trainer_token': trainer_token
+            },
+            json={
+                'pokemon_id': my_pokemon_id
+            })
+    return True
+
+
+def delete_from_pokeball(base_url, trainer_token, my_pokemon_id):
+    '''
+    Удалить покемона из покебола
+    '''
+    requests.post(f'{base_url}trainers/delete_pokeball',
             headers={
                 'Content-Type': 'application/json',
                 'trainer_token': trainer_token
