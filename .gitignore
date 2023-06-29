@@ -3,3 +3,5 @@ env/
 *.pytest_cache
 .vscode
 secrets.txt
+vars/secrets.py
+vars/__init__.py

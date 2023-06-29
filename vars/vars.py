@@ -1,9 +1,10 @@
 import random
+from vars.secrets import trainer_token, trainer_id, trainer_name
 
 base_url = 'https://api.pokemonbattle.me:9104/'
-trainer_token = 'your trainer token'
-trainer_id = 'your trainer id'
-trainer_name = 'your trainer name'
+trainer_token = trainer_token
+trainer_id = trainer_id
+trainer_name = trainer_name
 pokemon_name = random.choice([
     'Severus',
     'Lucius',
