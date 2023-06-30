@@ -56,7 +56,7 @@ def delete_from_pokeball(base_url, trainer_token, my_pokemon_id):
     '''
     Удалить покемона из покебола
     '''
-    requests.post(f'{base_url}trainers/delete_pokeball',
+    requests.put(f'{base_url}trainers/delete_pokeball',
             headers={
                 'Content-Type': 'application/json',
                 'trainer_token': trainer_token
@@ -67,12 +67,13 @@ def delete_from_pokeball(base_url, trainer_token, my_pokemon_id):
     return True
     
 
-def find_pokemons_in_pokeball(base_url):
+def find_pokemons_in_pokeball(base_url, page=0):
     '''
     Найти покемонов в покеболе
     '''
     return requests.get(f'{base_url}pokemons', params={
-        'in_pokeball': 1
+        'in_pokeball': 1,
+        'page': str(page)
         }).json()
 
 
