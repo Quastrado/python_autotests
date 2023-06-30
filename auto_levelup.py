@@ -12,10 +12,9 @@
 # Для регистрации можно использовать любую почту или авторизацию через соц сети.
 # 3. После регистрации нужно подтвердить аккаунт - это можно сделать по ссылке, которая придет на почту или через Postman
 
-import requests
 import sys
 import time
-from vars.vars import base_url, trainer_id, trainer_token, pokemon_name, pokemon_photo, limit_text
+from vars.vars import base_url, trainer_id, trainer_token, limit_text
 from methods import *
 from utils import *
 
@@ -36,13 +35,20 @@ for i in range(1, counter + 1):
     time.sleep(2)
     # Получаем список своих покемонов
     my_pokemons = get_my_pokemons(base_url, trainer_id)
+    # Если 5 покемонов тренера с атакой 7, уведомить об этом
+    weakest = get_weakest(my_pokemons)
+    if weakest['attack'] == 7 and len(my_pokemons) == 5:
+        print('Твоим покемонам некуда расти')
+        sys.exit()
+    # Находим своих покемонов в покеболе
+    my_pokemons_in_pokeball = get_my_pokemons_in_pokeball(base_url, trainer_id) 
     # Если покемонов у тренера меньше 5, создаём нового и ловим
     if len(my_pokemons) < 5:
         new_pokemon = create_pokemon(base_url, trainer_token)
         new_pokemon_id = new_pokemon['id']
-        add_pokeball(base_url, trainer_token, new_pokemon_id)
-    # Находим своих покемонов в покеболе
-    my_pokemons_in_pokeball = get_my_pokemons_in_pokeball(base_url, trainer_id) 
+    # Если в покеболе меньше 3 покемонов, ловим нового
+        if len(my_pokemons_in_pokeball) < 3:
+            add_pokeball(base_url, trainer_token, new_pokemon_id)
     # Выбираем из своих покемонов покемона с самой высокой атакой
     my_pokemon = get_strongest(my_pokemons_in_pokeball)
     my_pokemon_id = my_pokemon['id']
@@ -74,12 +80,16 @@ for i in range(1, counter + 1):
         sys.exit()
     
     print(f'Итерация {i}, итог: Победа')
+    time.sleep(1)
     # Если атака покемона увеличивается до 7,
     # убираем его из покебола чтоб обезопасить
-    if int(float(my_pokemon['attack'])) == 7:
+    my_pokemons_in_pokeball = get_my_pokemons_in_pokeball(base_url, trainer_id)
+    strongest = get_strongest(my_pokemons_in_pokeball)
+    strongest_id = strongest['id']
+    if int(float(strongest['attack'])) == 7:
         delete_from_pokeball(
             base_url,
             trainer_token,
-            my_pokemon_id
+            strongest_id
             )
     
